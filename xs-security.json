@@ -3,6 +3,10 @@
   "tenant-mode": "dedicated",
   "description": "Security profile of called application",
   "scopes": [{
+    "name":"uaa.user",
+    "description":"UAA"
+  },
+  {
     "name":"$XSAPPNAME.maintain",
     "description":"Employee Maintain"
   }],
