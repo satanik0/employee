@@ -2,6 +2,19 @@
   "xsappname": "maintemployee",
   "tenant-mode": "dedicated",
   "description": "Security profile of called application",
-  "scopes": [],
-  "role-templates": []
+  "scopes": [{
+    "name":"uaa.user",
+    "description":"UAA"
+  },
+  {
+    "name":"$XSAPPNAME.maintain",
+    "description":"Employee Maintain"
+  }],
+  "role-templates": [{
+    "name":"POC_HR",
+    "description":"HR Role",
+    "scope-references":[
+      "$XSAPPNAME.maintain"
+    ]
+  }]
 }
