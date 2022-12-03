@@ -161,5 +161,8 @@
     "sap.cloud": {
         "public": true,
         "service": "maintemployee"
+    },
+    "sap.platform.cf": {
+        "oAuthScopes": ["$XSAPPNAME.maintain"]
     }
 }
