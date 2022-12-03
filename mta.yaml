@@ -1,0 +1,94 @@
+_schema-version: "3.2"
+ID: maintemployee
+description: Maintain Employee
+version: 0.0.1
+modules:
+- name: maintemployee-destination-content
+  type: com.sap.application.content
+  requires:
+  - name: maintemployee-destination-service
+    parameters:
+      content-target: true
+  - name: maintemployee-repo-host
+    parameters:
+      service-key:
+        name: maintemployee-repo-host-key
+  - name: maintemployee-uaa
+    parameters:
+      service-key:
+        name: maintemployee-uaa-key
+  parameters:
+    content:
+      instance:
+        destinations:
+        - Name: maintemployee_html_repo_host
+          ServiceInstanceName: maintemployee-html5-srv
+          ServiceKeyName: maintemployee-repo-host-key
+          sap.cloud.service: maintemployee
+        - Authentication: OAuth2UserTokenExchange
+          Name: maintemployee_uaa
+          ServiceInstanceName: maintemployee-xsuaa-srv
+          ServiceKeyName: maintemployee-uaa-key
+          sap.cloud.service: maintemployee
+        existing_destinations_policy: ignore
+  build-parameters:
+    no-source: true
+- name: maintemployee-app-content
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: maintemployee-repo-host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - maintemployee.zip
+      name: maintemployee
+      target-path: resources/
+- name: maintemployee
+  type: html5
+  path: .
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+resources:
+- name: maintemployee-destination-service
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: true
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          existing_destinations_policy: update
+      version: 1.0.0
+    service: destination
+    service-name: maintemployee-destination-service
+    service-plan: lite
+- name: maintemployee-uaa
+  type: org.cloudfoundry.managed-service
+  parameters:
+    path: ./xs-security.json
+    service: xsuaa
+    service-name: maintemployee-xsuaa-srv
+    service-plan: application
+- name: maintemployee-repo-host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: maintemployee-html5-srv
+    service-plan: app-host
+parameters:
+  deploy_mode: html5-repo
+  enable-parallel-deployments: true
